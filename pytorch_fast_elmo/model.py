@@ -30,7 +30,10 @@ def _raise_if_kwargs_is_invalid(allowed: Set[str], kwargs: Dict[str, Any]) -> No
 
 # Implement in Python as a temporary solution.
 class ScalarMix(torch.nn.Module):  # type: ignore
-
+    “”“
+    加权融合多层lstm的隐含层，得到ELMo的输入形式，等式(1)
+    ”“”
+    
     def __init__(
             self,
             mixture_size: int,
@@ -120,7 +123,7 @@ class FastElmoBase(torch.nn.Module):  # type: ignore
             'exec_managed_lstm_reset_states',
             'exec_sort_batch',
     }
-    COMMON_PARAMS = SCALAR_MIX_PARAMS | EXEC_PARAMS
+    COMMON_PARAMS = SCALAR_MIX_PARAMS | EXEC_PARAMS # 合并两个set
 
     _CHAR_CNN_FILTERS = [
             (1, 32),
