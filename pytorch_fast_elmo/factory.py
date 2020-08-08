@@ -11,8 +11,8 @@ import torch
 import h5py
 import numpy as np
 
-from pytorch_stateful_lstm import StatefulUnidirectionalLstm
-from _pytorch_fast_elmo import ElmoCharacterEncoder  # pylint: disable=no-name-in-module
+from pytorch_stateful_lstm import StatefulUnidirectionalLstm  # 找不到pytorch_stateful_lstm的位置
+from _pytorch_fast_elmo import ElmoCharacterEncoder  # pylint: disable=no-name-in-module  # 找不到_pytorch_fast_elmo这个包的位置
 
 
 def load_options(options_file: Optional[str]):  # type: ignore
@@ -40,7 +40,10 @@ class FactoryBase:
 
 
 class ElmoCharacterEncoderFactory(FactoryBase):
-
+    
+    """
+    from scractch, 初始化一个ElmoCharacterEncoderFactory(None, None)，并set options
+    """
     @staticmethod
     def from_scratch(
             char_embedding_cnt: int,
@@ -80,7 +83,7 @@ class ElmoCharacterEncoderFactory(FactoryBase):
 
         self.named_parameters: Dict[str, torch.Tensor] = {}
 
-        module = ElmoCharacterEncoder(
+        module = ElmoCharacterEncoder(  # ElmoCharacterEncoder是加载不了的，因为找不到这个类的位置
                 self.char_embedding_cnt,
                 self.char_embedding_dim,
                 self.filters,
@@ -120,10 +123,10 @@ class ElmoCharacterEncoderFactory(FactoryBase):
     def _load_cnn_weights(self) -> None:
         for conv_idx, (kernel_size, out_channels) in enumerate(self.filters):
             with h5py.File(self.weight_file, 'r') as fin:
-                weight = fin['CNN'][f'W_cnn_{conv_idx}'][...]
+                weight = fin['CNN'][f'W_cnn_{conv_idx}'][...]  
                 bias = fin['CNN'][f'b_cnn_{conv_idx}'][...]
 
-            w_reshaped = np.transpose(weight.squeeze(axis=0), axes=(2, 1, 0))
+            w_reshaped = np.transpose(weight.squeeze(axis=0), axes=(2, 1, 0))  # 参照上下文看，原来的weight的size应该是(kernel_size, char_embedding_dim, out_channels)
             if w_reshaped.shape != (out_channels, self.char_embedding_dim, kernel_size):
                 raise ValueError("Invalid weight file")
 
